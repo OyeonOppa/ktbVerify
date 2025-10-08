@@ -25,7 +25,6 @@ input.addEventListener('input', () => {
         const html = data.data.map(item => `
           <div class="card mb-2 p-3">
             <p><strong>ชื่อบริษัท / บุคคล:</strong> ${item.company}</p>
-            <p><strong>เลขประจำตัวผู้เสียภาษี:</strong> ${item.taxId}</p>
           </div>
         `).join('');
         resultDiv.innerHTML = html;
