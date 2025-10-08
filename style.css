@@ -1,0 +1,60 @@
+body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  font-family: 'Kanit', sans-serif;
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;     /* กึ่งกลางแนวตั้ง */
+  justify-content: center; /* กึ่งกลางแนวนอน */
+  padding: 1rem;           /* ป้องกันติดขอบ */
+}
+
+.container {
+  max-width: 600px;
+  width: 100%;
+}
+
+p {
+    color:#919090
+}
+.card-form, .card-result {
+  max-width: 600px;
+  width: 100%;
+  background: #fff;
+  border: none;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.card-result {
+  margin-top: 1.5rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.card-result .card-header {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #007bff;
+}
+
+.masked {
+  color: #555;
+  font-style: italic;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
