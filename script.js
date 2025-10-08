@@ -4,35 +4,35 @@ document.getElementById('checkForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const type = document.getElementById('type').value.trim();
-  const taxId = document.getElementById('taxId').value.trim();
   const resultDiv = document.getElementById('result');
 
-  resultDiv.classList.remove('d-none','alert-success','alert-danger');
-  resultDiv.classList.add('card', 'p-3');
-  resultDiv.innerHTML = '<div class="text-center text-muted">⏳ กำลังตรวจสอบข้อมูล...</div>';
+  if (!type) {
+    resultDiv.innerHTML = `<div class="alert alert-warning">กรุณากรอกชื่อเพื่อค้นหา</div>`;
+    return;
+  }
+
+  resultDiv.innerHTML = `<div class="text-center text-muted">⏳ กำลังค้นหาข้อมูล...</div>`;
 
   try {
-    const url = `${API_URL}?companyName=${encodeURIComponent(type)}&taxId=${encodeURIComponent(taxId)}`;
+    const url = `${API_URL}?companyName=${encodeURIComponent(type)}`;
     const res = await fetch(url);
     const data = await res.json();
 
-    if (data.success) {
-      resultDiv.innerHTML = `
-        <div class="card-header text-center">✅ ${data.message}</div>
-        <div class="card-body">
-          <p><strong>ชื่อบริษัท / บุคคล:</strong> <span class="masked">${data.data.company}</span></p>
-          <p><strong>เลขประจำตัวผู้เสียภาษี:</strong> <span class="masked">${data.data.taxId}</span></p>
+    if (data.success && data.data.length > 0) {
+      // แสดงผลแบบรายการทั้งหมดที่ตรงกับ search
+      let html = data.data.map(item => `
+        <div class="card mb-2 p-3">
+          <p><strong>ชื่อบริษัท / บุคคล:</strong> ${item.company}</p>
         </div>
-      `;
+      `).join('');
+
+      resultDiv.innerHTML = html;
     } else {
-      resultDiv.innerHTML = `
-        <div class="card-header text-center text-danger">❌ ${data.message}</div>
-      `;
+      resultDiv.innerHTML = `<div class="alert alert-danger">ไม่พบข้อมูลที่ตรงกัน</div>`;
     }
 
   } catch (err) {
-    resultDiv.innerHTML = `
-      <div class="card-header text-center text-danger">เกิดข้อผิดพลาดในการเชื่อมต่อ</div>
-    `;
+    console.error(err);
+    resultDiv.innerHTML = `<div class="alert alert-danger">เกิดข้อผิดพลาดในการเชื่อมต่อ</div>`;
   }
 });
