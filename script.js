@@ -1,38 +1,41 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbyH4NaMhjn-aeG1prpLvALNfRI3DJNgFY9s9of45sIvOGbTOiZAn_bVsqB-WPfTz6nX/exec";
 
-document.getElementById('checkForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+const input = document.getElementById('type');
+const resultDiv = document.getElementById('result');
 
-  const type = document.getElementById('type').value.trim();
-  const resultDiv = document.getElementById('result');
+let timeout = null;
 
-  if (!type) {
-    resultDiv.innerHTML = `<div class="alert alert-warning">กรุณากรอกชื่อเพื่อค้นหา</div>`;
+input.addEventListener('input', () => {
+  clearTimeout(timeout);
+  const query = input.value.trim();
+
+  if (!query) {
+    resultDiv.innerHTML = '';
     return;
   }
 
-  resultDiv.innerHTML = `<div class="text-center text-muted">⏳ กำลังค้นหาข้อมูล...</div>`;
+  // debounce 300ms
+  timeout = setTimeout(async () => {
+    resultDiv.innerHTML = `<div class="text-center text-muted">⏳ กำลังค้นหาข้อมูล...</div>`;
+    try {
+      const res = await fetch(`${API_URL}?companyName=${encodeURIComponent(query)}`);
+      const data = await res.json();
 
-  try {
-    const url = `${API_URL}?companyName=${encodeURIComponent(type)}`;
-    const res = await fetch(url);
-    const data = await res.json();
+      if (data.success && data.data.length > 0) {
+        const html = data.data.map(item => `
+          <div class="card mb-2 p-3">
+            <p><strong>ชื่อบริษัท / บุคคล:</strong> ${item.company}</p>
+            <p><strong>เลขประจำตัวผู้เสียภาษี:</strong> ${item.taxId}</p>
+          </div>
+        `).join('');
+        resultDiv.innerHTML = html;
+      } else {
+        resultDiv.innerHTML = `<div class="alert alert-danger">ไม่พบข้อมูลที่ตรงกัน</div>`;
+      }
 
-    if (data.success && data.data.length > 0) {
-      // แสดงผลแบบรายการทั้งหมดที่ตรงกับ search
-      let html = data.data.map(item => `
-        <div class="card mb-2 p-3">
-          <p><strong>ชื่อบริษัท / บุคคล:</strong> ${item.company}</p>
-        </div>
-      `).join('');
-
-      resultDiv.innerHTML = html;
-    } else {
-      resultDiv.innerHTML = `<div class="alert alert-danger">ไม่พบข้อมูลที่ตรงกัน</div>`;
+    } catch (err) {
+      console.error(err);
+      resultDiv.innerHTML = `<div class="alert alert-danger">เกิดข้อผิดพลาดในการเชื่อมต่อ</div>`;
     }
-
-  } catch (err) {
-    console.error(err);
-    resultDiv.innerHTML = `<div class="alert alert-danger">เกิดข้อผิดพลาดในการเชื่อมต่อ</div>`;
-  }
+  }, 300);
 });
