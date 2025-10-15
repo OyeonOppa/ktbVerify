@@ -15,6 +15,7 @@ input.addEventListener('input', () => {
     return;
   }
 
+  // debounce 300ms
   timeout = setTimeout(async () => {
     resultDiv.innerHTML = `<div class="text-center text-muted">⏳ กำลังค้นหาข้อมูล...</div>`;
     
@@ -44,7 +45,7 @@ input.addEventListener('input', () => {
       console.error('Error from API 2:', err);
     }
 
-    // แสดงผลลัพธ์ (ไม่มี source)
+    // แสดงผลลัพธ์
     if (allResults.length > 0) {
       const html = allResults.map(item => `
         <div class="card mb-2 p-3">
